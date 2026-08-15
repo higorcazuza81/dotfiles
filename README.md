@@ -1,11 +1,12 @@
 # dotfiles
 
-Personal configuration files for a Linux development environment, managed with
-[chezmoi](https://www.chezmoi.io/) and version-controlled with Git. Applied
-across two personal laptops and two homelab nodes, all running Pop!_OS.
+Personal configuration files for a Linux development environment, managed
+with [chezmoi](https://www.chezmoi.io/) and version-controlled with Git.
+Applied across two laptops running Pop!_OS and Ubuntu Server virtual
+machines hosted on two Proxmox VE nodes.
 
-This document explains what is tracked, how the repository is structured, and
-the reasoning behind decisions that are not self-evident from the files
+This document describes what is tracked, how the repository is structured,
+and the reasoning behind decisions that are not self-evident from the files
 themselves.
 
 ## Contents
@@ -25,21 +26,21 @@ Three dotfile managers were considered: GNU Stow (symlink farm, no logic
 layer), yadm (treats `$HOME` itself as a Git working tree), and chezmoi
 (maintains a separate source directory and computes a target state).
 
-chezmoi was chosen for two reasons specific to this setup. First, it requires
-an explicit `chezmoi add` per file rather than exposing the entire home
-directory to Git, which lowers the chance of accidentally tracking something
-outside the intended scope. Second, its templating system supports
-machine-specific variation (by hostname, OS, or custom data) without
-maintaining parallel files — relevant here since the repository targets four
-machines with different hardware profiles (two laptops, two resource-constrained
-homelab nodes).
+chezmoi was chosen for two reasons. First, it requires an explicit
+`chezmoi add` per file rather than exposing the entire home directory to
+Git, which reduces the chance of tracking something outside the intended
+scope. Second, its templating system supports machine-specific variation
+(by hostname, OS, or custom data) without maintaining parallel files, which
+is relevant when the same configuration is applied to heterogeneous targets
+— in this case, two laptops and multiple homelab VMs with different
+hardware constraints.
 
 ## Repository layout
 
-chezmoi stores files in its source directory (`~/.local/share/chezmoi`) using
-a naming convention that encodes the target path and file attributes. A
-leading dot is represented as `dot_`, since Git and most tools do not handle
-literal dot-prefixed names well in a repository root.
+chezmoi stores files in its source directory (`~/.local/share/chezmoi`)
+using a naming convention that encodes the target path and file attributes.
+A leading dot is represented as `dot_`, since Git and most tools do not
+handle literal dot-prefixed names well in a repository root.
 
 ```
 dot_bashrc                          -> ~/.bashrc
@@ -55,20 +56,20 @@ tracked target path.
 
 ### Load order
 
-`.bashrc` follows the file's original section order (history, prompt,
-colors, aliases, completion, `PATH`, tool integrations) with one constraint
-added: the native bash-completion block must load **before** the fzf
-integration block. Both register against the same completion mechanism, and
-whichever loads second wins — loading fzf first would silently break
-`Ctrl+T` and `**<Tab>` completion.
+`.bashrc` follows a fixed section order: history, prompt, colors, aliases,
+completion, `PATH`, tool integrations. One ordering constraint applies:
+native bash-completion must load before the fzf shell integration. Both
+register against the same completion mechanism, and whichever loads second
+takes precedence — loading fzf first breaks `Ctrl+T` and `**<Tab>`
+completion.
 
 ### fzf integration
 
-fzf is integrated via its own code-generation flag when available
+fzf is integrated using its own code-generation flag when available
 (`fzf --bash`), falling back to sourcing the on-disk scripts shipped by the
-Debian/Ubuntu package when it isn't. This keeps a single `.bashrc` working
-across machines that may have different fzf versions (laptop vs. homelab
-node package versions can drift).
+Debian/Ubuntu package when it is not. This keeps a single `.bashrc` working
+across machines with different fzf versions, which varies between the
+laptops and the homelab VMs depending on when each was last updated.
 
 | Key | Action |
 |---|---|
@@ -79,18 +80,17 @@ node package versions can drift).
 
 fzf takes over `Ctrl+R` by default. The native `reverse-i-search` is
 relocated to `Ctrl+X Ctrl+R` rather than dropped, since environments without
-fzf (a bare LXC container, a freshly provisioned node) still need it.
+fzf — a bare LXC container, a freshly provisioned VM — still need it.
 
-That relocation has a documented side effect: `Ctrl+X Ctrl+R` was not free.
-By default it is bound to `re-read-init-file` (reloads `~/.inputrc` without
-restarting the shell). This was found by comparing `bind -p` output with and
-without the custom `.bashrc` loaded, not anticipated in advance. The
-override is accepted — `re-read-init-file` is rarely used — but is called
-out explicitly in a comment rather than left silent.
+That key combination is not free by default: bash binds `Ctrl+X Ctrl+R` to
+`re-read-init-file` (reloads `~/.inputrc` without restarting the shell) out
+of the box. The override is intentional: `re-read-init-file` sees little
+practical use, and the trade-off is documented in the configuration itself
+rather than left implicit.
 
 `fd` is used as fzf's search backend instead of the default `find`, since it
-respects `.gitignore` (build output such as `target/` never appears in
-`Ctrl+T` results) and is substantially faster on large trees.
+respects `.gitignore` — build output such as `target/` never appears in
+`Ctrl+T` results — and performs substantially faster on large trees.
 
 ### fd and bat
 
@@ -102,10 +102,10 @@ are restored under their upstream names through two independent mechanisms:
 - A symlink in `~/.local/bin`, valid everywhere, including non-interactive
   contexts.
 
-The distinction matters concretely: `FZF_DEFAULT_COMMAND` and related
-variables are expanded by a non-interactive subshell, where aliases do not
-exist. Without the symlink, fzf would silently fall back to the system
-`find` regardless of the alias being defined.
+The distinction is functional, not redundant: `FZF_DEFAULT_COMMAND` and
+related variables are expanded by a non-interactive subshell, where aliases
+do not exist. Without the symlink, fzf would silently fall back to the
+system `find` regardless of the alias being defined.
 
 ### Naming convention
 
@@ -113,59 +113,58 @@ No alias overrides the name of a foundational tool. There is no
 `alias cat=bat` and no `alias find=fd`. `bat` paginates and colorizes by
 default, which breaks pipes and scripts in subtle ways if it silently
 replaces `cat`. `fd` has incompatible syntax with `find`, which remains the
-tool available on any server regardless of what is installed locally. Modern
-tools are added as a layer on top of the fundamental one, never as a
-replacement for its name.
+tool available on any server regardless of what else is installed. Modern
+tools are layered on top of the foundational one, never substituted for its
+name.
 
 ## Excluded from version control
 
 `.chezmoiignore` excludes:
 
 - `.config/ghostty/auto/theme.ghostty` — regenerated automatically by the
-  terminal (theme switching), not hand-authored configuration. Including it
+  terminal (theme switching), not hand-authored configuration. Tracking it
   would produce a permanent, meaningless diff.
 - `.config/tmux/plugins/` — third-party plugin clones, each with its own
-  `.git` directory. These are reconstructed from `.tmux.conf` on a fresh
-  machine by the plugin manager itself and are not user configuration.
+  `.git` directory. These are reconstructed from `.tmux.conf` by the plugin
+  manager on a fresh machine and are not user configuration.
 - `.config/Code/User/globalStorage`, `workspaceStorage`, `History` — editor
   cache and session state, not configuration.
 - Any path matching an SSH private key (`.ssh/`, `id_rsa*`, `id_ed25519*`,
-  `id_ecdsa*`, `*.pem`) — excluded unconditionally as a standing safety net,
-  independent of whichever files a future `chezmoi add` targets.
+  `id_ecdsa*`, `*.pem`) — excluded unconditionally, independent of which
+  files a future `chezmoi add` targets.
 
 ## File permissions and umask
 
 chezmoi does not store the exact permission bits of a tracked file. By
 design, it records only whether a file is executable or private
-(owner-only), and computes the actual mode to apply from the umask active on
-the target machine at apply time.
+(owner-only), and computes the mode to apply from the umask active on the
+target machine at apply time.
 
-This repository's origin machine runs with umask `0002` (group-writable by
-default) rather than the more common `0022`. Left uncorrected, this produces
-a permanent, content-free diff on every `chezmoi diff` (`644` vs. `664`,
-`755` vs. `775`), and on a machine where it matters — `~/.ssh/config`, for
-instance — group-writable permissions can cause SSH to refuse the file
-outright.
+A umask of `0002` (group-writable by default) rather than the more common
+`0022` produces a permanent, content-free diff on every `chezmoi diff`
+(`644` vs. `664`, `755` vs. `775`). On a machine where it matters —
+`~/.ssh/config`, for instance — group-writable permissions can cause SSH to
+refuse the file outright.
 
-The fix is machine-local, not part of this repository: chezmoi explicitly
-refuses to let its own configuration file be added to itself, since it may
-carry machine-specific values or secrets.
+The fix is machine-local and intentionally not part of this repository:
+chezmoi refuses to let its own configuration file be added to itself, since
+it may carry machine-specific values or secrets.
 
 ```toml
 # ~/.config/chezmoi/chezmoi.toml
 umask = 0o022
 ```
 
-This file must be created manually on each new machine before running
-`chezmoi apply`, if that machine's default umask is not `0022`.
+This file is created manually on each machine whose default umask is not
+`0022`, before running `chezmoi apply`.
 
 ## Public repository
 
-This repository is public. Before each commit, tracked files are checked
-for credentials, tokens, and private key material with a pattern-based
-grep pass, and periodically with a dedicated secret scanner. No secret
+This repository is public. Tracked files are checked for credentials,
+tokens, and private key material with a pattern-based search before each
+commit, and periodically with a dedicated secret scanner. No secret
 material is intentionally version-controlled; SSH private keys are excluded
-at the ignore-file level regardless of scanning results, as described above.
+at the ignore-file level regardless of scan results, as described above.
 
 ## Setup on a new machine
 
@@ -174,16 +173,17 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply higorcazuza81
 ```
 
 This installs chezmoi, clones this repository, and applies every tracked
-file to the corresponding path under `$HOME` in a single step.
+file to its corresponding path under `$HOME` in a single step.
 
 If the target machine's default umask is not `0022`, create
 `~/.config/chezmoi/chezmoi.toml` with the `umask` setting shown above before
-running `chezmoi apply` again, to avoid a permanent permission diff.
+running `chezmoi apply`, to avoid a permanent permission diff.
 
 ## Dependencies
 
-The configuration assumes the following are installed. Package names as
-found on Debian/Ubuntu-derived distributions, where two of them are renamed:
+The configuration assumes the following are installed. Package and binary
+names are as found on Debian/Ubuntu-derived distributions — which covers
+both Pop!_OS and Ubuntu Server, where two of the binaries are renamed:
 
 | Tool | Debian/Ubuntu package | Binary name |
 |---|---|---|
@@ -197,5 +197,5 @@ found on Debian/Ubuntu-derived distributions, where two of them are renamed:
 
 ## License
 
-No explicit license is applied. This is a personal configuration repository,
-published for reference and portfolio purposes.
+No explicit license is applied. This is a personal configuration
+repository, published for reference.
