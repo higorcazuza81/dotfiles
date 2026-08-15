@@ -1,0 +1,8 @@
+{
+  "shellformat.useEditorConfig": true,
+  "editor.formatOnSave": true,
+  "[shellscript]": {
+    "editor.defaultFormatter": "mkhl.shfmt"
+  },
+  "files.autoSave": "afterDelay"
+}

@@ -1,0 +1,51 @@
+# ~/.config/starship.toml
+
+# Formato
+format = """
+$hostname\
+$git_branch\
+$git_status\
+$kubernetes\
+$docker_context\
+$cmd_duration\
+$character"""
+
+add_newline = false
+
+[hostname]
+ssh_only = true
+format = "[$hostname](bold #f38ba8) "
+
+[git_branch]
+symbol = " "
+format = "[$symbol$branch]($style) "
+style = "bold #a6e3a1"
+
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+conflicted = "!"
+modified = "!"
+untracked = "?"
+staged = "+"
+style = "bold #f38ba8"
+
+[kubernetes]
+disabled = false
+symbol = "☸ "
+format = '[$symbol$context( \($namespace\))]($style) '
+style = "bold #89dceb"
+
+[docker_context]
+symbol = " "
+format = "[$symbol$context]($style) "
+style = "bold #74c7ec"
+only_with_files = true
+
+[cmd_duration]
+min_time = 2000
+format = "[took $duration]($style) "
+style = "bold #f9e2af"
+
+[character]
+success_symbol = "[❯](bold #a6e3a1)"
+error_symbol = "[❯](bold #f38ba8)"

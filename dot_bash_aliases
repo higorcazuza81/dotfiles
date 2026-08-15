@@ -1,0 +1,114 @@
+# ~/.bash_aliases — carregado pelo ~/.bashrc
+#
+# Regra desta casa: ferramenta moderna e CAMADA por cima do
+# fundamento, nunca substituicao do nome dele.
+#   - nao existe 'alias cat=bat'  (bat pagina e colore; quebra pipe)
+#   - nao existe 'alias find=fd'  (sintaxe diferente; find e o que
+#     existe em qualquer servidor e o que a Fase 0 cobra)
+
+# ------------------------------------------------------------
+# MISSAO 9 — renomeacao dos binarios do Debian/Ubuntu
+#   No Debian/Ubuntu (e portanto Pop!_OS) esses dois binarios sao
+#   renomeados por colisao de nome com pacotes ja existentes:
+#     fd  -> fdfind
+#     bat -> batcat
+#
+#   ATENCAO: alias so vale em shell INTERATIVO. Nao funciona em
+#   script, em xargs, em subshell nem dentro de FZF_DEFAULT_COMMAND.
+#   Por isso existem tambem os symlinks em ~/.local/bin (ver
+#   setup-terminal.sh). Estes aliases sao redundantes com o symlink
+#   e ficam aqui de proposito, como registro do exercicio.
+#
+#   Prove a diferenca voce mesmo:
+#     fd --version              # alias resolve
+#     bash -c 'fd --version'    # so o symlink salva
+# ------------------------------------------------------------
+command -v fdfind  >/dev/null 2>&1 && alias fd='fdfind'
+command -v batcat  >/dev/null 2>&1 && alias bat='batcat'
+
+# ------------------------------------------------------------
+# ATALHOS DE USO DIARIO
+# ------------------------------------------------------------
+alias ..='cd ..'
+alias ...='cd ../..'
+alias mkdir='mkdir -pv'
+
+# rede/lab
+alias ports='ss -tulpn'
+alias myip='ip -brief address'
+
+# git curto (o suficiente; o resto se digita)
+alias gs='git status --short --branch'
+alias gd='git diff'
+alias gl='git log --oneline --graph --decorate -20'
+
+# ------------------------------------------------------------
+# FUNCOES FUZZY
+#   Sao funcoes e nao aliases porque precisam de argumento,
+#   variavel local e logica de saida.
+# ------------------------------------------------------------
+
+# sshf — escolhe um host do ~/.ssh/config e conecta.
+#   Depende de ter os nos do lab declarados la, ex.:
+#     Host pve1
+#       HostName 192.168.x.x
+#       User root
+#       IdentityFile ~/.ssh/id_ed25519
+sshf() {
+  local host
+  host=$(grep -E '^[[:space:]]*Host[[:space:]]' ~/.ssh/config 2>/dev/null \
+    | awk '{for (i=2; i<=NF; i++) print $i}' \
+    | grep -v '[*?]' \
+    | sort -u \
+    | fzf --prompt='ssh> ' --height 40%) || return 0
+  [ -n "$host" ] && ssh "$host"
+}
+
+# gco — troca de branch git de forma fuzzy (local ou remota)
+gco() {
+  local branch
+  branch=$(git branch --all 2>/dev/null \
+    | grep -v 'HEAD' \
+    | sed 's/^[* ]*//; s#^remotes/origin/##' \
+    | sort -u \
+    | fzf --prompt='branch> ' --height 40%) || return 0
+  [ -n "$branch" ] && git checkout "$branch"
+}
+
+# fkill — mata processo escolhido de forma fuzzy.
+#   Uso: fkill        (SIGTERM, o educado)
+#        fkill 9      (SIGKILL, o ultimo recurso)
+#   Tab marca varios processos de uma vez.
+fkill() {
+  local pids
+  pids=$(ps -eo pid,ppid,user,%cpu,%mem,comm --sort=-%cpu \
+    | sed 1d \
+    | fzf --multi --prompt='kill> ' --header='Tab marca varios' \
+    | awk '{print $1}') || return 0
+  [ -n "$pids" ] && echo "$pids" | xargs -r kill -"${1:-15}"
+}
+
+# fe — abre no editor um arquivo escolhido de forma fuzzy,
+#   com preview do conteudo. Respeita $EDITOR (default: vim).
+fe() {
+  local file
+  file=$(fzf --prompt='edit> ' \
+    --preview 'bat --color=always --style=numbers --line-range=:200 {}') || return 0
+  [ -n "$file" ] && "${EDITOR:-vim}" "$file"
+}
+
+# frg — busca por CONTEUDO (grep) e abre o arquivo na linha achada.
+#   Complementa o Ctrl+T, que busca por NOME.
+frg() {
+  [ -z "$1" ] && { echo "uso: frg <padrao>"; return 2; }
+  local match file line
+  match=$(grep --line-number --recursive --binary-files=without-match \
+            --exclude-dir=.git --exclude-dir=target --exclude-dir=node_modules \
+            "$1" . 2>/dev/null \
+          | fzf --prompt='match> ' --delimiter=: \
+                --preview 'bat --color=always --style=numbers --highlight-line {2} {1}') || return 0
+  [ -z "$match" ] && return 0
+  file=$(echo "$match" | cut -d: -f1)
+  line=$(echo "$match" | cut -d: -f2)
+  "${EDITOR:-vim}" +"$line" "$file"
+}

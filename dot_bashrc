@@ -1,0 +1,182 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# ------------------------------------------------------------
+# HISTORICO
+# ------------------------------------------------------------
+# don't put duplicate lines or lines starting with space in the history.
+HISTCONTROL=ignoreboth
+# append to the history file, don't overwrite it
+shopt -s histappend
+# historico maior (padrao Debian era 1000/2000) + timestamp por comando
+HISTSIZE=10000
+HISTFILESIZE=20000
+HISTTIMEFORMAT="%F %T "
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# habilita "**" para expansao recursiva de caminho (nativo do bash,
+# nao e sugestao automatica — voce digita ** de proposito)
+shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# ------------------------------------------------------------
+# PROMPT
+#   O prompt de verdade e controlado pelo Starship, la embaixo.
+#   Nao ha PS1 manual aqui de proposito — qualquer PS1 setado
+#   neste arquivo seria sobrescrito pelo starship init mesmo assim.
+# ------------------------------------------------------------
+
+# ------------------------------------------------------------
+# CORES DE LS / GREP
+# ------------------------------------------------------------
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Add an "alert" alias for long running commands. Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# ------------------------------------------------------------
+# ALIASES ADICIONAIS
+# ------------------------------------------------------------
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# ------------------------------------------------------------
+# COMPLETION NATIVO DO BASH (Tab) — mantido de proposito.
+#   Isso NAO e sugestao automatica tipo fish; e o completar por
+#   Tab que existe em qualquer servidor Linux, faz parte do
+#   reflexo real de bash que voce quer treinar.
+#
+#   ORDEM IMPORTA: este bloco precisa vir ANTES da integracao do
+#   fzf la embaixo. O completion do fzf se registra em cima do
+#   bash-completion; se o fzf carregar primeiro, o bash-completion
+#   sobrescreve o dele e o Ctrl+T/** para de completar direito.
+# ------------------------------------------------------------
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+
+# ------------------------------------------------------------
+# PATH
+#   ~/.local/bin vem primeiro de proposito: e onde moram os
+#   symlinks fd -> fdfind e bat -> batcat. Alias so existe em
+#   shell interativo; symlink no PATH funciona tambem em script,
+#   subshell e dentro das variaveis FZF_* abaixo (que sao
+#   expandidas por um shell NAO interativo).
+# ------------------------------------------------------------
+export PATH="$HOME/.local/bin:$PATH"
+
+# ------------------------------------------------------------
+# FERRAMENTAS
+# ------------------------------------------------------------
+
+# Starship — so o prompt, nao completa nem sugere nada
+eval "$(starship init bash)"
+
+# zoxide — comando "z" extra, NAO substitui o "cd" nativo.
+#   Bonus: com o fzf integrado abaixo, o "zi" (modo interativo do
+#   zoxide) passa a abrir um seletor fuzzy decente.
+eval "$(zoxide init bash)"
+
+# ------------------------------------------------------------
+# FZF — busca fuzzy: keybindings + completion
+#
+#   DECISAO REGISTRADA (substitui a nota antiga sobre o television):
+#   o television foi removido; o fzf assume o Ctrl+R. Diferente do
+#   tv, o Ctrl+R do fzf e praticamente padrao de mercado e o custo
+#   de aprende-lo se paga em qualquer maquina. Em troca, o
+#   reverse-i-search NATIVO do bash e realocado para Ctrl+X Ctrl+R
+#   (ver bind no fim do bloco) — porque em LXC, no Proxmox ou em
+#   qualquer servidor sem fzf, o nativo e o unico que existe.
+#
+#   ATENCAO (verificado com bind -p): Ctrl+X Ctrl+R ja tinha uso
+#   nativo — "re-read-init-file" (recarrega o ~/.inputrc sem abrir
+#   shell novo). O bind abaixo sobrescreve esse binding de proposito.
+#   Aceitavel: e uma funcao raramente usada (a alternativa comum e
+#   so abrir um shell novo). Se um dia precisar dela, o Ctrl+X Ctrl+R
+#   nao serve mais para isso — use "bind -f ~/.inputrc" direto.
+#
+#   Keybindings que passam a valer:
+#     Ctrl+R  historico fuzzy (via bind -x — nao aparece em bind -p,
+#             so em bind -X)
+#     Ctrl+T  arquivos (insere o caminho na linha de comando)
+#     Alt+C   cd fuzzy em subdiretorio
+#     Ctrl+X Ctrl+R  reverse-i-search nativo do bash (substitui
+#             re-read-init-file, ver ATENCAO acima)
+#
+#   Motor de busca: fd em vez do find padrao do fzf — respeita
+#   .gitignore (sem target/, node_modules/) e e muito mais rapido
+#   em arvore grande.
+# ------------------------------------------------------------
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+
+export FZF_DEFAULT_OPTS='--height 60% --layout=reverse --border --info=inline --cycle'
+
+# Ctrl+T: preview do arquivo com bat (syntax highlight, sem paginador)
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:200 {}' --preview-window right:60%:wrap"
+
+# Alt+C: preview da arvore do diretorio
+export FZF_ALT_C_OPTS="--preview 'tree -C {} 2>/dev/null | head -100' --preview-window right:50%"
+
+# Ctrl+R: preview do comando inteiro (util quando o comando e longo
+# e a linha aparece truncada). Aperte ? para mostrar/esconder.
+export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
+
+if command -v fzf >/dev/null 2>&1; then
+  # fzf recente (>= 0.48) gera o proprio codigo de integracao,
+  # mesma ideia do "starship init" / "zoxide init" acima.
+  if fzf --bash >/dev/null 2>&1; then
+    eval "$(fzf --bash)"
+  else
+    # fzf antigo (o do apt no Debian/Ubuntu): os scripts de
+    # integracao vem em disco e sao carregados com source.
+    for _fzf_file in \
+      /usr/share/doc/fzf/examples/key-bindings.bash \
+      /usr/share/doc/fzf/examples/completion.bash \
+      /usr/share/bash-completion/completions/fzf
+    do
+      [ -f "$_fzf_file" ] && . "$_fzf_file"
+    done
+    unset _fzf_file
+  fi
+
+  # devolve o reverse-i-search nativo do bash para Ctrl+X Ctrl+R
+  bind '"\C-x\C-r": reverse-search-history' 2>/dev/null
+fi
+
+# ------------------------------------------------------------
+# TMUX
+# ------------------------------------------------------------
+# tmux-resurrect: salvar/restaurar sessao manualmente, sob demanda
+alias tmux-restore='tmux run-shell ~/.tmux/plugins/tmux-resurrect/scripts/restore.sh'
+alias tmux-save='tmux run-shell ~/.tmux/plugins/tmux-resurrect/scripts/save.sh'

@@ -1,0 +1,24 @@
+# Gerado automaticamente pelo sistema — nao e config escrita a mao,
+# so gera ruido constante no diff.
+.config/ghostty/auto/theme.ghostty
+
+# TPM e qualquer plugin manager de tmux — clones de terceiros com
+# .git proprio, em QUALQUER um dos dois caminhos que o tmux usa
+# (o antigo ~/.tmux/plugins e o XDG ~/.config/tmux/plugins).
+# Se reconstroem sozinhos a partir do tmux.conf, nao sao config do
+# usuario.
+.tmux/plugins
+.config/tmux/plugins
+
+# Cache/estado que o VS Code regrava sozinho, sem valor de config.
+.config/Code/User/globalStorage
+.config/Code/User/workspaceStorage
+.config/Code/User/History
+
+# Rede de seguranca: chave privada NUNCA entra aqui, mesmo por engano,
+# independente de qual comando de add for rodado no futuro.
+.ssh
+**/*.pem
+**/id_rsa*
+**/id_ed25519*
+**/id_ecdsa*
