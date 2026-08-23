@@ -23,3 +23,8 @@
 **/id_ed25519*
 **/id_ecdsa*
 README.md
+
+# Material de estudo sobre a propria config (ghostty/tmux/ferramentas
+# CLI) — vive versionado no repo, mas nao e um dotfile: nao faz sentido
+# aplicado como ~/docs em toda maquina (ex.: VMs sem ghostty).
+docs
