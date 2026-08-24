@@ -1,145 +1,148 @@
-# tmux — sessões, janelas, painéis e plugins
+# tmux — sessions, windows, panes and plugins
 
-Versão instalada: `3.4`. Config em `~/.tmux.conf`. Tema: `catppuccin/tmux`
-(flavor `mocha`). Como o Ghostty já abre com
-`tmux new-session -A -s main`, você **já está dentro do tmux** assim que
-abre um terminal — não precisa digitar `tmux` para começar.
+Installed version: `3.4`. Config in `~/.tmux.conf`. Theme:
+`catppuccin/tmux` (flavor `mocha`). Since Ghostty already opens with
+`tmux new-session -A -s main`, I'm **already inside tmux** as soon as I
+open a terminal — I never type `tmux` to get started.
 
-## Prefixo
+## Prefix
 
-Todo comando de tmux começa com o **prefixo**. Neste setup existem **dois**:
+Every tmux command starts with the **prefix**. In this setup there are
+**two**:
 
-| Prefixo | Config |
+| Prefix | Config |
 |---|---|
-| `Ctrl+b` | padrão do tmux |
-| `Ctrl+a` | atalho extra (`prefix2`), mais rápido de digitar |
+| `Ctrl+b` | tmux default |
+| `Ctrl+a` | extra shortcut (`prefix2`), faster to type |
 
-Nas tabelas abaixo, "prefixo" significa apertar `Ctrl+b` **ou** `Ctrl+a` e
-soltar, depois apertar a tecla da ação.
+In the tables below, "prefix" means pressing `Ctrl+b` **or** `Ctrl+a`,
+releasing it, then pressing the action key.
 
-## Descoberta nativa de atalhos
+## Native keybinding discovery
 
-| Atalho | Ação |
+| Shortcut | Action |
 |---|---|
-| prefixo `?` | Lista **todos** os keybinds ativos (built-in + deste config) — use isso quando esquecer algo |
+| prefix `?` | Lists **all** active keybindings (built-in + this config) — my go-to when I forget something |
 
-## Sessões
+## Sessions
 
-| Atalho / comando | Ação |
+| Shortcut / command | Action |
 |---|---|
-| prefixo `s` | Abre popup do **sesh** (troca de sessão fuzzy — ver seção sesh abaixo) |
-| prefixo `L` | Reconecta à **última** sessão usada (`sesh last`) |
-| prefixo `d` | Desanexar (detach) da sessão, deixando tudo rodando |
-| prefixo `$` | Renomear a sessão atual |
-| `tmux ls` (fora do tmux) | Listar sessões |
-| `tmux attach -t main` | Reconectar na sessão `main` de fora do tmux |
-| `tmux kill-session -t <nome>` | Encerrar uma sessão |
+| prefix `s` | Opens the **sesh** popup (fuzzy session switcher — see the sesh section below) |
+| prefix `L` | Reconnects to the **last** used session (`sesh last`) |
+| prefix `d` | Detach from the session, leaving everything running |
+| prefix `$` | Rename the current session |
+| `tmux ls` (outside tmux) | List sessions |
+| `tmux attach -t main` | Reconnect to the `main` session from outside tmux |
+| `tmux kill-session -t <name>` | Kill a session |
 
-## Janelas (windows — equivalentes a "abas" dentro de uma sessão)
+## Windows (equivalent to "tabs" within a session)
 
-| Atalho | Ação |
+| Shortcut | Action |
 |---|---|
-| prefixo `c` | Nova janela, abrindo **em `$HOME`** (customizado — o padrão do tmux seria o diretório atual) |
-| prefixo `,` | Renomear janela atual |
-| prefixo `w` | Listar janelas (navegação visual) |
-| prefixo `n` / prefixo `p` | Próxima / janela anterior |
-| prefixo `0`–`9` | Ir direto para a janela N |
-| prefixo `&` | Fechar janela atual (pede confirmação) |
+| prefix `c` | New window, opening **in `$HOME`** (customized — tmux's default is the current directory) |
+| prefix `,` | Rename the current window |
+| prefix `w` | List windows (visual navigation) |
+| prefix `n` / prefix `p` | Next / previous window |
+| prefix `0`–`9` | Jump directly to window N |
+| prefix `&` | Close the current window (asks for confirmation) |
 
-> Numeração começa em `1`, não em `0` (`base-index 1`), e janelas são
-> renumeradas automaticamente ao fechar uma no meio (`renumber-windows on`).
+> Numbering starts at `1`, not `0` (`base-index 1`), and windows are
+> automatically renumbered when one in the middle is closed
+> (`renumber-windows on`).
 
-## Painéis (panes — divisões dentro de uma janela)
+## Panes (splits within a window)
 
-| Atalho | Ação |
+| Shortcut | Action |
 |---|---|
-| prefixo `"` | Split **horizontal** (painel abaixo) — herda o diretório atual (customizado) |
-| prefixo `%` | Split **vertical** (painel ao lado) — herda o diretório atual (customizado) |
-| prefixo `x` | Fecha o painel atual **sem pedir confirmação** (customizado — o padrão pede `y/n`) |
-| prefixo `o` | Alternar foco entre painéis |
-| prefixo `←/→/↑/↓` (setas) | Mover foco para o painel na direção |
-| prefixo `z` | Zoom no painel atual (expande para tela cheia da janela, aperta de novo pra voltar) |
-| prefixo `Ctrl+←/→/↑/↓` (segure o prefixo) | Redimensionar painel |
-| Mouse | Clicar troca de painel, arrastar a borda redimensiona (`mouse on`) |
+| prefix `"` | **Horizontal** split (pane below) — inherits the current directory (customized) |
+| prefix `%` | **Vertical** split (pane beside) — inherits the current directory (customized) |
+| prefix `x` | Closes the current pane **without asking for confirmation** (customized — the default asks `y/n`) |
+| prefix `o` | Cycle focus between panes |
+| prefix `←/→/↑/↓` (arrows) | Move focus to the pane in that direction |
+| prefix `z` | Zoom the current pane (expands to fill the window, press again to restore) |
+| prefix `Ctrl+←/→/↑/↓` (hold the prefix) | Resize a pane |
+| Mouse | Click to switch panes, drag the border to resize (`mouse on`) |
 
-## Funções extras estilo Zellij (customizadas neste config)
+## Zellij-style extras (custom to this config)
 
-| Atalho | Ação |
+| Shortcut | Action |
 |---|---|
-| prefixo `f` | **Terminal flutuante** — popup de 80%×80% no diretório atual |
-| prefixo `g` | **Popup com `htop`** rodando (monitor de processos), 80%×80% |
+| prefix `f` | **Floating terminal** — 80%×80% popup in the current directory |
+| prefix `g` | **`htop` popup** (process monitor), 80%×80% |
 
-## sesh — troca de sessão inteligente
+## sesh — smart session switching
 
-`sesh` usa `zoxide` para sugerir diretórios/sessões e integra com `fzf`.
+`sesh` uses `zoxide` to suggest directories/sessions and integrates with
+`fzf`.
 
-| Comando | O que faz |
+| Command | What it does |
 |---|---|
-| prefixo `s` | Popup: `sesh list \| fzf` → conecta na sessão escolhida |
-| prefixo `L` | Volta direto pra última sessão (sem popup) |
-| `sesh list` | Lista sessões conhecidas (tmux ativas + diretórios do zoxide) |
-| `sesh connect <nome>` | Conecta/cria sessão com esse nome |
-| `sesh last` | Igual ao prefixo `L`, via linha de comando |
-| `sesh clone <repo>` | Clona um repo git e já abre uma sessão nele |
-| `sesh picker` | Abre o seletor interativo fora do tmux também |
+| prefix `s` | Popup: `sesh list \| fzf` → connects to the chosen session |
+| prefix `L` | Jumps straight back to the last session (no popup) |
+| `sesh list` | Lists known sessions (active tmux sessions + zoxide directories) |
+| `sesh connect <name>` | Connects to (or creates) a session with that name |
+| `sesh last` | Same as prefix `L`, from the command line |
+| `sesh clone <repo>` | Clones a git repo and opens a session in it |
+| `sesh picker` | Opens the interactive picker outside of tmux too |
 
-## Modo cópia (vi-style — `mode-keys vi`)
+## Copy mode (vi-style — `mode-keys vi`)
 
-| Atalho | Ação |
+| Shortcut | Action |
 |---|---|
-| prefixo `[` | Entrar em modo cópia (navegar o scrollback) |
-| `h j k l` | Mover cursor (como no vim) |
-| `v` | Iniciar seleção |
-| `y` | Copiar seleção e sair do modo cópia |
-| `Ctrl+v` | Alternar seleção em bloco (retangular) |
-| `q` ou `Esc` | Sair do modo cópia sem copiar |
-| `Ctrl+b` / `Ctrl+f` (dentro do modo cópia) | Página anterior / próxima |
-| `set-clipboard on` | Cópia no tmux já vai pro clipboard do sistema (X11/Wayland) |
+| prefix `[` | Enter copy mode (navigate the scrollback) |
+| `h j k l` | Move the cursor (vim-style) |
+| `v` | Start selection |
+| `y` | Copy the selection and exit copy mode |
+| `Ctrl+v` | Toggle rectangular (block) selection |
+| `q` or `Esc` | Exit copy mode without copying |
+| `Ctrl+b` / `Ctrl+f` (inside copy mode) | Previous / next page |
+| `set-clipboard on` | Copying in tmux already goes to the system clipboard (X11/Wayland) |
 
-## Persistência de sessão — `tmux-resurrect` / `tmux-continuum`
+## Session persistence — `tmux-resurrect` / `tmux-continuum`
 
-Salva **sob demanda**, não restaura automático ao abrir o Ghostty
-(`@continuum-restore 'off'` — decisão proposital, ver `~/.tmux.conf`).
+Saves **on demand**; it does not restore automatically when Ghostty opens
+(`@continuum-restore 'off'` — a deliberate decision, see `~/.tmux.conf`).
 
-| Comando (fora do tmux, no bash) | O que faz |
+| Command (outside tmux, in bash) | What it does |
 |---|---|
-| `tmux-save` | Salva o estado atual de todas as sessões/painéis |
-| `tmux-restore` | Restaura o último estado salvo |
+| `tmux-save` | Saves the current state of all sessions/panes |
+| `tmux-restore` | Restores the last saved state |
 
-O `tmux-continuum` também salva **automaticamente em background** a cada
-15 minutos (`@continuum-save-interval '15'`), mas só o `tmux-restore`
-manual é que aplica o snapshot.
+`tmux-continuum` also saves **automatically in the background** every 15
+minutes (`@continuum-save-interval '15'`), but only running `tmux-restore`
+manually applies the snapshot.
 
-## Plugins instalados (`~/.tmux/plugins`, gerenciados pelo TPM)
+## Installed plugins (`~/.tmux/plugins`, managed by TPM)
 
-| Plugin | Para que serve |
+| Plugin | Purpose |
 |---|---|
-| `tpm` | Gerenciador de plugins do tmux (instala/atualiza os demais) |
-| `tmux-sensible` | Configurações "de bom senso" que praticamente todo setup deveria ter |
-| `tmux-yank` | Melhora a integração de copiar para o clipboard do sistema |
-| `tmux-resurrect` | Salvar/restaurar sessões, janelas e painéis manualmente |
-| `tmux-continuum` | Auto-save em background do `tmux-resurrect` |
-| `tmux-battery` | Indicador de bateria (para status bar) |
-| `tmux-fzf` | Menus fuzzy do tmux (sessões, janelas, painéis) via `fzf` |
-| `catppuccin/tmux` | Tema visual da status bar (flavor `mocha`) |
+| `tpm` | tmux plugin manager (installs/updates the rest) |
+| `tmux-sensible` | "Good defaults" that most setups should have |
+| `tmux-yank` | Improves system-clipboard copy integration |
+| `tmux-resurrect` | Manually save/restore sessions, windows, and panes |
+| `tmux-continuum` | Background auto-save for `tmux-resurrect` |
+| `tmux-battery` | Battery indicator (for the status bar) |
+| `tmux-fzf` | Fuzzy tmux menus (sessions, windows, panes) via `fzf` |
+| `catppuccin/tmux` | Status bar theme (flavor `mocha`) |
 
-| Comando TPM (dentro do tmux) | Ação |
+| TPM command (inside tmux) | Action |
 |---|---|
-| prefixo `I` (I maiúsculo) | Instalar plugins novos listados no `.tmux.conf` |
-| prefixo `U` | Atualizar plugins |
-| prefixo `Alt+u` | Remover plugins que não estão mais no `.tmux.conf` |
+| prefix `I` (capital I) | Install new plugins listed in `.tmux.conf` |
+| prefix `U` | Update plugins |
+| prefix `Alt+u` | Remove plugins no longer listed in `.tmux.conf` |
 
 ### tmux-fzf
 
-| Atalho | Ação |
+| Shortcut | Action |
 |---|---|
-| prefixo `F` (F maiúsculo) | Abre o menu fuzzy do `tmux-fzf` (sessões/janelas/painéis/comandos) |
+| prefix `F` (capital F) | Opens the `tmux-fzf` fuzzy menu (sessions/windows/panes/commands) |
 
-## Configurações de comportamento relevantes (não são comandos, mas mudam o uso)
+## Relevant behavior settings (not commands, but they change day-to-day use)
 
-| Config | Efeito prático |
+| Setting | Practical effect |
 |---|---|
-| `escape-time 0` | Sem delay ao apertar `Esc` (importante pra quem usa vim/neovim) |
-| `history-limit 50000` | Scrollback de 50 mil linhas por painel |
-| `detach-on-destroy off` | Ao fechar a última janela de uma sessão, cai em outra sessão em vez de sair do tmux |
-| `status-position top` | Barra de status fica no topo, não embaixo |
+| `escape-time 0` | No delay when pressing `Esc` (important for vim/neovim) |
+| `history-limit 50000` | 50,000 lines of scrollback per pane |
+| `detach-on-destroy off` | Closing a session's last window drops me into another session instead of exiting tmux |
+| `status-position top` | Status bar sits at the top, not the bottom |
