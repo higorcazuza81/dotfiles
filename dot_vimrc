@@ -1,0 +1,52 @@
+" ~/.vimrc - basic productivity configuration
+
+" --- General ---
+set nocompatible              " modern vim mode (not vi)
+syntax on                     " syntax highlighting (bash, python, java, yaml, etc)
+filetype plugin indent on     " filetype detection + smart indentation
+
+" --- Lines ---
+set number                    " line numbers
+set relativenumber            " relative line numbers (easier to move with 5j, 3k...)
+set cursorline                " highlight current line
+
+" --- Indentation ---
+set tabstop=4                 " tab = 4 spaces
+set shiftwidth=4
+set softtabstop=4
+set expandtab                 " convert tabs to spaces
+set autoindent
+set smartindent
+
+" --- Search ---
+set incsearch                 " incremental search
+set hlsearch                  " highlight search results
+set ignorecase
+set smartcase                 " ignore case unless an uppercase letter is typed
+
+" --- Interface ---
+set showcmd                   " show command being typed
+set showmatch                 " highlight matching bracket/parenthesis
+set wildmenu                  " command autocompletion menu
+set laststatus=2              " always show status bar
+set scrolloff=5                " keep context lines while scrolling
+set encoding=utf-8
+colorscheme desert             " good colors for code and config files (built-in)
+
+" --- Productivity ---
+set clipboard=unnamedplus     " integrate with system clipboard
+set mouse=a                   " enable mouse support
+set backspace=indent,eol,start
+nnoremap <leader>n :nohlsearch<CR>   " <leader>n clears search highlight
+
+" --- Filetype-specific settings ---
+augroup filetype_rules
+  autocmd!
+  autocmd FileName Dockerfile setfiletype dockerfile
+  autocmd BufNewFile,BufRead Dockerfile* setfiletype dockerfile
+  autocmd BufNewFile,BufRead *.yml,*.yaml setfiletype yaml
+  autocmd BufNewFile,BufRead *.conf,*.cfg setfiletype conf
+  autocmd FileType yaml setlocal tabstop=2 shiftwidth=2 softtabstop=2
+  autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4
+  autocmd FileType java setlocal tabstop=4 shiftwidth=4 softtabstop=4
+augroup END
