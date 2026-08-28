@@ -54,6 +54,16 @@ dot_config/ghostty/                 -> ~/.config/ghostty/
 The mapping is deterministic and reversible; `chezmoi managed` lists every
 tracked target path.
 
+Two directories carry a tracked `.keep` file — `.config/tmux/` and
+`.config/ghostty/auto/`. Both hold only generated or third-party content
+that is excluded via `.chezmoiignore` (tmux plugin clones; the
+theme-switcher's `theme.ghostty`), so without a placeholder the directory
+itself would have nothing to commit — Git does not track empty
+directories. These `.keep` files are a source-repo bookkeeping device only:
+chezmoi does not apply them to the target machine (an empty file needs the
+`empty_` source attribute to become a real target, which these
+deliberately don't have), so they leave no trace under `$HOME`.
+
 ## Shell configuration
 
 ### Load order
