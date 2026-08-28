@@ -222,6 +222,25 @@ If the target machine's default umask is not `0022`, create
 `~/.config/chezmoi/chezmoi.toml` with the `umask` setting shown above before
 running `chezmoi apply`, to avoid a permanent permission diff.
 
+`chezmoi apply` only materializes the files this repository tracks — it
+does not install the tools themselves (see Dependencies below), and two
+tmux components are intentionally excluded from version control because
+they are reconstructed from `.tmux.conf`, not restored from it
+automatically:
+
+```bash
+# TPM itself — the plugin manager .tmux.conf's last line depends on
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+# catppuccin/tmux — loaded via `run`, not through TPM
+git clone https://github.com/catppuccin/tmux.git \
+  ~/.config/tmux/plugins/catppuccin/tmux
+```
+
+Then start tmux and press `prefix + I` to fetch the remaining plugins
+listed in `.tmux.conf` (`tmux-sensible`, `tmux-yank`, `tmux-resurrect`,
+`tmux-continuum`, `tmux-battery`, `tmux-fzf`).
+
 ## Dependencies
 
 The configuration assumes the following are installed. Package and binary
