@@ -64,6 +64,17 @@ chezmoi does not apply them to the target machine (an empty file needs the
 `empty_` source attribute to become a real target, which these
 deliberately don't have), so they leave no trace under `$HOME`.
 
+## Documentation
+
+[`docs/`](./docs/00-index.md) is a hand-written reference manual for the
+terminal stack (Ghostty, tmux, `fzf`/`fd`/`bat`/`zoxide`/`starship`, and the
+fuzzy functions in `.bash_aliases`) — keybinding tables and command maps
+verified against what these dotfiles actually configure, not a generic
+cheat sheet. It is versioned in this repository but listed in
+`.chezmoiignore`: it documents the configuration, it isn't itself a dotfile,
+so applying it as `~/docs` on every machine (including headless VMs without
+Ghostty) would make no sense.
+
 ## Shell configuration
 
 ### Load order
