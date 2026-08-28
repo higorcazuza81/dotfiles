@@ -18,7 +18,9 @@ themselves.
 | Terminal multiplexer | `.tmux.conf` |
 | Prompt | `.config/starship.toml` |
 | Terminal emulator | `.config/ghostty/` |
-| Editor | `.config/Code/User/settings.json` |
+| Editor (terminal) | `.vimrc` |
+| Editor (GUI) | `.config/Code/User/settings.json` |
+| Terminal reference manual | [`docs/`](./docs/00-index.md) (versioned, not applied — see below) |
 
 ## Why chezmoi
 
