@@ -204,6 +204,11 @@ commit, and periodically with a dedicated secret scanner. No secret
 material is intentionally version-controlled; SSH private keys are excluded
 at the ignore-file level regardless of scan results, as described above.
 
+`.gitconfig` is the one exception to "public means generic": it hardcodes
+this author's name and GitHub no-reply email. Anyone forking or reusing
+this repository needs to replace `[user]` before applying it, or their
+commits will be attributed here instead.
+
 ## Setup on a new machine
 
 ```bash
