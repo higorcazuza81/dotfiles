@@ -260,6 +260,14 @@ both Pop!_OS and Ubuntu Server, where two of the binaries are renamed:
 | starship | — (installed via upstream script) | `starship` |
 | zoxide | — (installed via upstream script) | `zoxide` |
 | git | `git` | `git` |
+| tmux | `tmux` | `tmux` |
+| ghostty | — (installed via upstream package/installer) | `ghostty` |
+| vim | `vim` | `vim` |
+| sesh | — (installed via upstream script) | `sesh` |
+| htop | `htop` | `htop` |
+
+tmux and Ghostty also need their own plugin/theme bootstrap (TPM plugins,
+the `catppuccin/tmux` clone) — see "Setup on a new machine" above.
 
 ## License
 
