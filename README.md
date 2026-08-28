@@ -140,6 +140,21 @@ tool available on any server regardless of what else is installed. Modern
 tools are layered on top of the foundational one, never substituted for its
 name.
 
+## Vim configuration
+
+`.vimrc` is a baseline productivity setup, not a plugin-managed IDE
+configuration — no plugin manager, no LSP. It sets sane defaults (relative
+line numbers, `**` search highlighting, system-clipboard integration,
+`<leader>n` to clear search highlight) and per-filetype indentation for the
+file types this environment touches most (YAML at 2 spaces, Python/Java at
+4, Dockerfile detection).
+
+`$EDITOR` is never exported in `.bashrc` or `.profile`. This is intentional
+rather than an oversight: the fuzzy functions in `.bash_aliases` (`fe`,
+`frg`) already fall back to `vim` via `"${EDITOR:-vim}"` when the variable
+is unset, so `.vimrc` being present is what makes that fallback a usable
+default rather than an empty promise.
+
 ## Excluded from version control
 
 `.chezmoiignore` excludes:
