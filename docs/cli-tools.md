@@ -8,9 +8,10 @@ of the date this manual was verified (2026-08-23):
 | fzf | 0.44.1 | `fzf` | — |
 | fd-find | 9.0.0 | `fdfind` | `fd` (alias + symlink in `~/.local/bin`) |
 | bat | 0.24.0 | `batcat` | `bat` (alias + symlink in `~/.local/bin`) |
+| eza | 0.18.2 | `eza` | `ll`/`la`/`l` point to it when present (see below); `exa` on this machine is the same `eza` binary under its old name, not the unmaintained original project |
 | tree | v2.1.1 | `tree` | — |
 | starship | 1.26.0 | `starship` | — |
-| zoxide | 0.9.3 | `zoxide` | — |
+| zoxide | 0.9.3 | `zoxide` | `z`/`zi`: my actual day-to-day way of changing directories, see below |
 | shellcheck | (installed) | `shellcheck` | — |
 | sesh | 2.26.2 | `sesh` | — |
 | htop | 3.3.0 | `htop` | — |
@@ -97,31 +98,40 @@ colorizes by default, which silently breaks pipes in scripts. I use `bat`
 deliberately when reading a file, and `cat` when chaining into another
 command.
 
-## zoxide — `cd` with memory
+## zoxide: my actual way of changing directories
 
 ```bash
-z partial-name     # jump to the most "frecent" directory matching the text
-z -                 # go back to the previous directory
-zi                  # open a fuzzy picker (integrated with fzf) over known directories
+z partial-name      # jump to the most "frecent" directory matching the text
+z -                  # go back to the previous directory
+zi                   # open a fuzzy picker (integrated with fzf) over known directories
 ```
 
-`z` **doesn't replace** `cd` — the two coexist. `zoxide` learns directories
-as I use `cd` normally.
+`z` is what I type day to day, not `cd`; it's faster once `zoxide` has
+learned a directory (usually after visiting it once with a real `cd` or by
+landing there via any other means: `z` records every directory bash
+actually changes into, `cd` included). Plain `cd` still exists and still
+works: nothing removes it, `zoxide` just makes it mostly unnecessary once
+a path has been visited once.
 
-## starship — prompt
+## eza: `ls` replacement with icons and git status
 
-Not a command I run day to day, but worth knowing how to read
-(`~/.config/starship.toml`):
+```bash
+eza --icons                                  # like ls, with file-type icons
+eza -l --all --group-directories-first       # long format, dotfiles, dirs first
+eza --tree --level=2 --icons                 # tree view, 2 levels deep
+eza -l --git --icons                         # long format with per-file git status
+```
 
-| Prompt segment | When it appears |
-|---|---|
-| Hostname (red) | Only inside an **SSH** session |
-| Git branch (green) | Inside a git repository |
-| Git status (`!` `?` `+`) | Modified / untracked / staged |
-| ☸ icon (kubernetes) | When there's an active kubectl context |
-| 🐳 icon (docker) | Only when Docker-related files exist in the directory |
-| "took Xs" (yellow) | Only if the previous command took more than 2s |
-| `❯` green/red | Success/failure of the last command |
+`ll`, `la`, and `l` (see `aliases-functions.md`) resolve to `eza` when it's
+installed, falling back to plain `ls` otherwise: same defensive pattern as
+`fd`/`bat`, so the same `.bashrc` still works on a bare server that only
+has coreutils. Plain `ls` itself is never aliased away, for the same reason
+`cat`/`find` aren't: a foundational tool's name should always mean the
+foundational tool.
+
+## starship: prompt
+
+Full segment-by-segment reference: [`starship.md`](./starship.md).
 
 ## tree — directory tree
 

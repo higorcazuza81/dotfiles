@@ -26,13 +26,18 @@ setup — none of it exists in a stock bash installation.
 | `gd` | `git diff` | Diff of unstaged changes |
 | `gl` | `git log --oneline --graph --decorate -20` | Last 20 commits, as a graph |
 
-## `ls` (from `~/.bashrc`, not `~/.bash_aliases`)
+## `ls`/`eza` (from `~/.bashrc`, not `~/.bash_aliases`)
 
-| Command | Equivalent to |
-|---|---|
-| `ll` | `ls -alF` (long format, all entries, file-type markers) |
-| `la` | `ls -A` (all entries except `.` and `..`) |
-| `l` | `ls -CF` (columnar, file-type markers) |
+| Command | When `eza` is installed | Fallback (no `eza`) |
+|---|---|---|
+| `ll` | `eza -l --all --group-directories-first --icons --git` | `ls -alF` |
+| `la` | `eza --all --icons` | `ls -A` |
+| `l` | `eza --icons` | `ls -CF` |
+| `lt` | `eza --tree --level=2 --icons` | (no fallback, `eza`-only) |
+
+Same defensive pattern as `fd`/`bat`: checked with `command -v` at shell
+startup, so the same `.bashrc` degrades gracefully on a server that only
+has coreutils.
 
 ## Fuzzy functions (built on `fzf`)
 
