@@ -17,6 +17,7 @@ generic cheat sheet copied from upstream docs.
 |---|---|
 | [`ghostty.md`](./ghostty.md) | Ghostty keybindings — tabs, splits, fonts, search |
 | [`tmux.md`](./tmux.md) | Prefix, sessions, windows, panes, copy mode, installed plugins, `sesh` |
+| [`starship.md`](./starship.md) | Prompt segments: what each badge means, when it appears |
 | [`cli-tools.md`](./cli-tools.md) | `fzf`, `fd`, `bat`, `zoxide`, `starship`, `tree`, `sesh`, `shellcheck`, `htop` |
 | [`aliases-functions.md`](./aliases-functions.md) | Aliases and functions from `~/.bash_aliases` (`sshf`, `gco`, `fkill`, `fe`, `frg`) |
 
