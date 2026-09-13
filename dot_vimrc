@@ -42,7 +42,6 @@ nnoremap <leader>n :nohlsearch<CR>   " <leader>n clears search highlight
 " --- Filetype-specific settings ---
 augroup filetype_rules
   autocmd!
-  autocmd FileName Dockerfile setfiletype dockerfile
   autocmd BufNewFile,BufRead Dockerfile* setfiletype dockerfile
   autocmd BufNewFile,BufRead *.yml,*.yaml setfiletype yaml
   autocmd BufNewFile,BufRead *.conf,*.cfg setfiletype conf
