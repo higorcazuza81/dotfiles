@@ -255,7 +255,7 @@ git clone https://github.com/catppuccin/tmux.git \
 
 Then start tmux and press `prefix + I` to fetch the remaining plugins
 listed in `.tmux.conf` (`tmux-sensible`, `tmux-yank`, `tmux-resurrect`,
-`tmux-continuum`, `tmux-battery`, `tmux-fzf`).
+`tmux-continuum`, `tmux-battery`, `tmux-fzf`, `tmux-prefix-highlight`).
 
 For the VS Code settings to apply cleanly, install the `mkhl.shfmt`
 extension — `dot_config/Code/User/settings.json` sets it as the default
