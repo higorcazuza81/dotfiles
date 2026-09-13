@@ -31,7 +31,8 @@ set wildmenu                  " command autocompletion menu
 set laststatus=2              " always show status bar
 set scrolloff=5                " keep context lines while scrolling
 set encoding=utf-8
-colorscheme desert             " good colors for code and config files (built-in)
+set termguicolors
+colorscheme catppuccin_mocha  " matches the tmux/starship theme
 
 " --- Productivity ---
 set clipboard=unnamedplus     " integrate with system clipboard
