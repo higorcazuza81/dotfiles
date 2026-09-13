@@ -163,6 +163,14 @@ rather than an oversight: the fuzzy functions in `.bash_aliases` (`fe`,
 is unset, so `.vimrc` being present is what makes that fallback a usable
 default rather than an empty promise.
 
+`.vimrc` and its colorscheme (`~/.vim/colors/catppuccin_mocha.vim`) are not
+applied to servers. When needed there, they're copied by hand:
+
+```bash
+scp ~/.vimrc pve1:~/
+scp ~/.vim/colors/catppuccin_mocha.vim pve1:~/.vim/colors/
+```
+
 ## Excluded from version control
 
 `.chezmoiignore` excludes:
