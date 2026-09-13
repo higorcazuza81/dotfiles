@@ -50,5 +50,10 @@ notify-on-command-finish = unfocused
 notify-on-command-finish-action = bell,notify
 notify-on-command-finish-after = 30s
 
-# ~/.config/ghostty/config
-command = tmux new-session -A -s main
+# --- tmux ---
+# Cada nova janela do Ghostty cria uma sessao tmux propria e independente
+# (em vez de sempre entrar/anexar na mesma sessao "main", que fazia toda
+# janela nova espelhar a que ja estava aberta). Para trocar de contexto
+# (outra sessao/servidor/repo) dentro de qualquer janela, use o seletor
+# fuzzy ja configurado: prefix + s (sesh).
+command = tmux
