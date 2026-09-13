@@ -78,6 +78,13 @@ Ghostty) would make no sense.
 
 ## Shell configuration
 
+### Prompt
+
+`.bashrc` checks `command -v starship` and uses it when present; otherwise
+it falls back to a plain `PS1` (bold white-on-red `user@host`, red path).
+`starship` is only installed on this laptop; servers keep the fallback
+`PS1`, so a server prompt never looks like the local one.
+
 ### Load order
 
 `.bashrc` follows a fixed section order: history, prompt, colors, aliases,
