@@ -1,6 +1,10 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
+#
+# Rationale for non-obvious decisions in this file (load order, fzf/bash-
+# completion interaction, fd/bat renaming) lives in the dotfiles repo's
+# README and docs/, not here: see https://github.com/higorcazuza81/dotfiles
 
 # If not running interactively, don't do anything
 case $- in
@@ -15,7 +19,6 @@ esac
 HISTCONTROL=ignoreboth
 # append to the history file, don't overwrite it
 shopt -s histappend
-# historico maior (padrao Debian era 1000/2000) + timestamp por comando
 HISTSIZE=10000
 HISTFILESIZE=20000
 HISTTIMEFORMAT="%F %T "
@@ -82,15 +85,9 @@ fi
 bind "set completion-ignore-case on" 2>/dev/null
 
 # ------------------------------------------------------------
-# COMPLETION NATIVO DO BASH (Tab) — mantido de proposito.
-#   Isso NAO e sugestao automatica tipo fish; e o completar por
-#   Tab que existe em qualquer servidor Linux, faz parte do
-#   reflexo real de bash que voce quer treinar.
-#
-#   ORDEM IMPORTA: este bloco precisa vir ANTES da integracao do
-#   fzf la embaixo. O completion do fzf se registra em cima do
-#   bash-completion; se o fzf carregar primeiro, o bash-completion
-#   sobrescreve o dele e o Ctrl+T/** para de completar direito.
+# COMPLETION NATIVO DO BASH (Tab)
+#   Precisa carregar ANTES do fzf: os dois se registram no mesmo
+#   mecanismo de completion, e quem carrega por ultimo vence.
 # ------------------------------------------------------------
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
@@ -102,11 +99,8 @@ fi
 
 # ------------------------------------------------------------
 # PATH
-#   ~/.local/bin vem primeiro de proposito: e onde moram os
-#   symlinks fd -> fdfind e bat -> batcat. Alias so existe em
-#   shell interativo; symlink no PATH funciona tambem em script,
-#   subshell e dentro das variaveis FZF_* abaixo (que sao
-#   expandidas por um shell NAO interativo).
+#   ~/.local/bin primeiro: symlinks fd->fdfind, bat->batcat (ver
+#   docs/cli-tools.md para o motivo dos symlinks existirem).
 # ------------------------------------------------------------
 export PATH="$HOME/.local/bin:$PATH"
 
@@ -139,24 +133,15 @@ export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
 
 export FZF_DEFAULT_OPTS='--height 60% --layout=reverse --border --info=inline --cycle'
 
-# Ctrl+T: preview do arquivo com bat (syntax highlight, sem paginador)
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:200 {}' --preview-window right:60%:wrap"
-
-# Alt+C: preview da arvore do diretorio
 export FZF_ALT_C_OPTS="--preview 'tree -C {} 2>/dev/null | head -100' --preview-window right:50%"
-
-# Ctrl+R: preview do comando inteiro (util quando o comando e longo
-# e a linha aparece truncada). Aperte ? para mostrar/esconder.
 export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 
 if command -v fzf >/dev/null 2>&1; then
-  # fzf recente (>= 0.48) gera o proprio codigo de integracao,
-  # mesma ideia do "starship init" / "zoxide init" acima.
   if fzf --bash >/dev/null 2>&1; then
     eval "$(fzf --bash)"
   else
-    # fzf antigo (o do apt no Debian/Ubuntu): os scripts de
-    # integracao vem em disco e sao carregados com source.
+    # fzf antigo (pacote do apt): scripts de integracao vem em disco
     for _fzf_file in \
       /usr/share/doc/fzf/examples/key-bindings.bash \
       /usr/share/doc/fzf/examples/completion.bash \
@@ -167,13 +152,11 @@ if command -v fzf >/dev/null 2>&1; then
     unset _fzf_file
   fi
 
-  # devolve o reverse-i-search nativo do bash para Ctrl+X Ctrl+R
   bind '"\C-x\C-r": reverse-search-history' 2>/dev/null
 fi
 
 # ------------------------------------------------------------
 # TMUX
 # ------------------------------------------------------------
-# tmux-resurrect: salvar/restaurar sessao manualmente, sob demanda
 alias tmux-restore='tmux run-shell ~/.tmux/plugins/tmux-resurrect/scripts/restore.sh'
 alias tmux-save='tmux run-shell ~/.tmux/plugins/tmux-resurrect/scripts/save.sh'
