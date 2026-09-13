@@ -1,5 +1,28 @@
 [user]
 	name = Higor Cazuza
 	email = 312232514+higorcazuza81@users.noreply.github.com
+	signingkey = /home/cazuza/.ssh/id_ed25519_github.pub
 [credential]
 	helper = cache --timeout=14400
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = true
+[gpg "ssh"]
+	allowedSignersFile = /home/cazuza/.ssh/allowed_signers
+[fetch]
+	prune = true
+[push]
+	autoSetupRemote = true
+[pull]
+	rebase = true
+[rerere]
+	enabled = true
+[diff]
+	colorMoved = default
+[init]
+	defaultBranch = main
+[core]
+	editor = vim
