@@ -78,6 +78,9 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+# case-insensitive tab completion
+bind "set completion-ignore-case on" 2>/dev/null
+
 # ------------------------------------------------------------
 # COMPLETION NATIVO DO BASH (Tab) — mantido de proposito.
 #   Isso NAO e sugestao automatica tipo fish; e o completar por
