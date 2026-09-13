@@ -18,7 +18,7 @@ install, independent of this dotfiles repository.
 | `background-blur` | `true` | Blur behind the window |
 | `font-family` | `JetBrainsMono Nerd Font` | Font (the Nerd Font variant is required for starship/tmux icons) |
 | `shell-integration-features` | `cursor,sudo,title,ssh-env,ssh-terminfo` | Cursor changes under `sudo`; tab title follows the running command; SSH propagates terminfo |
-| `command` | `tmux new-session -A -s main` | Every new window opens straight into tmux |
+| `command` | `tmux` | Every new window opens straight into its own fresh tmux session (not a shared one, see `tmux.md`) |
 | `confirm-close-surface` | `true` | Asks for confirmation before closing a pane with a running process |
 | `notify-on-command-finish` | `unfocused`, after `30s` | Notifies when a long-running command finishes in an unfocused tab |
 

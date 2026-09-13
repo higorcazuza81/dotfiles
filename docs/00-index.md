@@ -25,10 +25,11 @@ generic cheat sheet copied from upstream docs.
 
 ```
 Ghostty (terminal emulator)
-  └─ always opens into: tmux new-session -A -s main   (see config = command)
+  └─ always opens into: tmux (a fresh, independent session per window)
       └─ tmux (multiplexer — sessions, windows, panes)
           └─ bash (shell)
               ├─ starship    → prompt
+              ├─ sesh        → prefix+s, fuzzy-jump between sessions
               ├─ zoxide      → "z" to jump between directories
               ├─ fzf         → Ctrl+R / Ctrl+T / Alt+C
               ├─ fd (fdfind) → fzf's search engine (respects .gitignore)
@@ -37,14 +38,17 @@ Ghostty (terminal emulator)
 ```
 
 The key thing to understand before reading the rest of these files: Ghostty
-opens straight into a tmux session named `main` (see `command = tmux
-new-session -A -s main` in `~/.config/ghostty/config`). In practice, **every
-tmux shortcut is available from the first terminal I open** — I never type
-`tmux` manually.
+opens straight into tmux (`command = tmux` in `~/.config/ghostty/config`).
+In practice, **every tmux shortcut is available from the first terminal I
+open**; I never type `tmux` manually. Each new Ghostty window gets its own
+fresh, independent tmux session rather than attaching to a shared one: two
+windows never mirror each other. To jump to a specific context (a project,
+a server), `prefix + s` opens `sesh`'s fuzzy switcher (see `tmux.md`).
 
 ## Where to start
 
-1. `tmux.md` — the layer I use constantly (it's automatic).
-2. `cli-tools.md` — `fzf` first (`Ctrl+R`/`Ctrl+T`/`Alt+C` are the highest-impact shortcuts).
-3. `aliases-functions.md` — shortcuts that combine tmux, fzf, and git.
-4. `ghostty.md` — the terminal emulator's own shortcuts (tabs, graphical splits, font).
+1. `tmux.md`: the layer I use constantly (it's automatic), and `sesh` for jumping between sessions/servers.
+2. `starship.md`: what the prompt is telling me at a glance.
+3. `cli-tools.md`: `fzf` first (`Ctrl+R`/`Ctrl+T`/`Alt+C` are the highest-impact shortcuts).
+4. `aliases-functions.md`: shortcuts that combine tmux, fzf, and git.
+5. `ghostty.md`: the terminal emulator's own shortcuts (tabs, graphical splits, font).
