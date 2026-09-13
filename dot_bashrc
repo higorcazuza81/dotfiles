@@ -24,9 +24,13 @@ HISTTIMEFORMAT="%F %T "
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-# habilita "**" para expansao recursiva de caminho (nativo do bash,
-# nao e sugestao automatica — voce digita ** de proposito)
-shopt -s globstar
+# ------------------------------------------------------------
+# QoL SHOPTS
+# ------------------------------------------------------------
+shopt -s globstar     # ** for recursive globbing
+shopt -s autocd       # typing a bare directory name cds into it
+shopt -s cdspell      # autocorrects minor typos in cd targets
+shopt -s dirspell     # same, during tab-completion of paths
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
