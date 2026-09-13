@@ -37,9 +37,10 @@ shopt -s dirspell     # same, during tab-completion of paths
 
 # ------------------------------------------------------------
 # PROMPT
-#   O prompt de verdade e controlado pelo Starship, la embaixo.
-#   Nao ha PS1 manual aqui de proposito — qualquer PS1 setado
-#   neste arquivo seria sobrescrito pelo starship init mesmo assim.
+#   Starship owns the prompt where it's installed (see FERRAMENTAS below).
+#   Where it isn't -- servers, deliberately -- a minimal red PS1 kicks in
+#   instead: different on purpose, so a server never looks like the local
+#   machine at a glance. See docs/starship.md in the dotfiles repo.
 # ------------------------------------------------------------
 
 # ------------------------------------------------------------
@@ -110,43 +111,24 @@ export PATH="$HOME/.local/bin:$PATH"
 # FERRAMENTAS
 # ------------------------------------------------------------
 
-# Starship — so o prompt, nao completa nem sugere nada
-eval "$(starship init bash)"
+# Starship owns the prompt only where it's actually installed (this
+# laptop). Deliberately NOT installed on servers -- see the fallback
+# below and docs/starship.md.
+if command -v starship >/dev/null 2>&1; then
+    eval "$(starship init bash)"
+else
+    # Minimal, unmistakably-not-local prompt: bold white-on-red
+    # user@host badge, red path. No external tool, works on any bash.
+    PS1='\[\e[1;37;41m\] \u@\h \[\e[0m\] \[\e[1;31m\]\w\[\e[0m\] \$ '
+fi
 
-# zoxide — comando "z" extra, NAO substitui o "cd" nativo.
-#   Bonus: com o fzf integrado abaixo, o "zi" (modo interativo do
-#   zoxide) passa a abrir um seletor fuzzy decente.
-eval "$(zoxide init bash)"
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init bash)"
 
 # ------------------------------------------------------------
 # FZF — busca fuzzy: keybindings + completion
-#
-#   DECISAO REGISTRADA (substitui a nota antiga sobre o television):
-#   o television foi removido; o fzf assume o Ctrl+R. Diferente do
-#   tv, o Ctrl+R do fzf e praticamente padrao de mercado e o custo
-#   de aprende-lo se paga em qualquer maquina. Em troca, o
-#   reverse-i-search NATIVO do bash e realocado para Ctrl+X Ctrl+R
-#   (ver bind no fim do bloco) — porque em LXC, no Proxmox ou em
-#   qualquer servidor sem fzf, o nativo e o unico que existe.
-#
-#   ATENCAO (verificado com bind -p): Ctrl+X Ctrl+R ja tinha uso
-#   nativo — "re-read-init-file" (recarrega o ~/.inputrc sem abrir
-#   shell novo). O bind abaixo sobrescreve esse binding de proposito.
-#   Aceitavel: e uma funcao raramente usada (a alternativa comum e
-#   so abrir um shell novo). Se um dia precisar dela, o Ctrl+X Ctrl+R
-#   nao serve mais para isso — use "bind -f ~/.inputrc" direto.
-#
-#   Keybindings que passam a valer:
-#     Ctrl+R  historico fuzzy (via bind -x — nao aparece em bind -p,
-#             so em bind -X)
-#     Ctrl+T  arquivos (insere o caminho na linha de comando)
-#     Alt+C   cd fuzzy em subdiretorio
-#     Ctrl+X Ctrl+R  reverse-i-search nativo do bash (substitui
-#             re-read-init-file, ver ATENCAO acima)
-#
-#   Motor de busca: fd em vez do find padrao do fzf — respeita
-#   .gitignore (sem target/, node_modules/) e e muito mais rapido
-#   em arvore grande.
+#   Ctrl+R historico | Ctrl+T arquivos | Alt+C cd fuzzy
+#   Ctrl+X Ctrl+R reverse-i-search nativo do bash (ver docs/tmux
+#   e docs/cli-tools.md para o motivo do remapeamento)
 # ------------------------------------------------------------
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
