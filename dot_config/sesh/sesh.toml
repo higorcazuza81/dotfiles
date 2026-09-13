@@ -3,7 +3,7 @@
 # Sessoes fixas para os servidores que voce acessa sempre. Na primeira vez
 # que conectar (sessao ainda nao existe), o sesh cria a sessao tmux e ja
 # roda o "ssh" sozinho. Da segunda vez em diante ele so reconecta na sessao
-# que ja estava viva (com o ssh ja conectado) — o startup_command so roda
+# que ja estava viva (com o ssh ja conectado): o startup_command so roda
 # na criacao, nunca de novo.
 #
 # Uso: prefix + s (popup do sesh) -> digite "pve1" ou "pve2".
